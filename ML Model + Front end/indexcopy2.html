@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url('https://imageio.forbes.com/specials-images/imageserve/5f25c259111c27814bcf29d5/Data/960x0.jpg?format=jpg&width=960'); /* Path to your image */
+            background-size: cover;
+            background-position: center;
+        }
+
+        #prediction-results {
+            background-color: rgba(255, 255, 255, 0.8); /* Background color with opacity */
+            padding: 20px;
+            width: 80%; /* Adjust the width as needed */
+            margin-left: auto; 
+            margin-right: auto;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        #prediction-text {
+            margin-top: 0;
+            font-size: 18px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div id="prediction-results">
+        <h2>Prediction Results</h2>
+        <p id="prediction-text">{{ prediction_text }}</p>
+        {% if prediction_text.endswith("JIO 4G") %}
+            <p>Information about JIO 4G: Jio offers affordable data plans, extensive network coverage, and high-speed internet,
+                 making it a compelling choice for customers seeking cost-effective, reliable connectivity with a seamless user experience.As of now, Jio's current price plans offer competitive rates for data, voice, and messaging services, 
+                  along with various bundled offers and discounts, ensuring affordability and value for customers.</p>
+        {% elif prediction_text.endswith("AIRTEL") %}
+            <p>Information about AIRTEL: [Insert your information here1]</p>
+        {% endif %}
+    </div>    
+</body>
+</html>

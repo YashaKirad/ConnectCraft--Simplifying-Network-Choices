@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Provider Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        #content {
+            max-width: 600px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 24px;
+            color: #333;
+        }
+
+        #map {
+            height: 400px;
+            width: 100%;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 30px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        form {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        input {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: calc(50% - 10px);
+        }
+
+        input[type="submit"] {
+            width: 100%;
+        }
+
+  
+
+        p {
+            margin-top: 0;
+            margin-left: 100px;
+        }
+
+        #prediction-results {
+            display: none;
+        }
+    </style>
+    <!-- Add Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+<body>
+
+<div id="content">
+    <h2>Device Location Detection</h2>
+
+    <button onclick="getLocation()">Detect Location</button>
+
+    <p id="demo"></p>
+
+    <!-- Map container -->
+    <div id="map"></div>
+
+    <!-- Select Location -->
+    <h2>Select Location</h2>
+    <form>
+        <select id="location-select">
+            <option value="kothrud">Kothrud</option>
+            <option value="pvg">PVG</option>
+            <option value="baner">Baner</option>
+        </select>
+        <button type="button" onclick="setLocation()">Set Location</button>
+    </form>
+    <br>
+    <!-- Enter Latitude and Longitude -->
+    <h2>Enter Latitude and Longitude</h2>
+    <form action="{{ url_for('predict')}}" id="predict-form" method="post">
+        <input type="number" step="any" name="latitude" id="latitude" placeholder="Latitude" required="required" />
+        <input type="number" step="any" name="longitude" id="longitude" placeholder="Longitude" required="required" />
+        <button type="submit" class="btn btn-primary btn-block btn-large" onclick="predict()">Predict</button>
+    </form>
+    
+    <!-- Display prediction results -->
+    <div id="prediction-results">
+        <h2>Prediction Results</h2>
+        <p id="prediction-text"></p>
+    </div>
+</div>
+
+<!-- Add Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+    } else { 
+        alert("Geolocation is not supported by this browser.");
+    }
+}
+
+function showPosition(position) {
+    var latitude = position.coords.latitude;
+    var longitude = position.coords.longitude;
+    document.getElementById("demo").innerHTML = "Latitude: " + latitude + "<br>Longitude: " + longitude;
+    document.getElementById("latitude").value = latitude;
+    document.getElementById("longitude").value = longitude;
+
+    // Call showMap function to display the map
+    showMap(latitude, longitude);
+}
+
+function showMap(latitude, longitude) {
+    // Create the map
+    var map = L.map('map').setView([latitude, longitude], 13);
+
+    // Add the tile layer (OpenStreetMap)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Add marker to the specified latitude and longitude
+    L.marker([latitude, longitude]).addTo(map)
+        .bindPopup('Your Location')
+        .openPopup();
+        
+}
+
+function setLocation() {
+    var select = document.getElementById("location-select");
+    var location = select.value;
+    var latitude, longitude;
+
+    switch(location) {
+        case "kothrud":
+            latitude = 18.50475181;
+            longitude = 73.82671298;
+            break;
+        case "pvg":
+            latitude = 18.490057;
+            longitude = 73.8523753;
+            break;
+        case "baner":
+            latitude = 18.571069;
+            longitude = 73.773285;
+            break;
+        default:
+            latitude = 0;
+            longitude = 0;
+            break;
+    }
+
+    document.getElementById("latitude").value = latitude;
+    document.getElementById("longitude").value = longitude;
+
+    // Call showMap function to display the map
+    showMap(latitude, longitude);
+}
+
+function predict() {
+    var latitude = document.getElementById("latitude").value;
+    var longitude = document.getElementById("longitude").value;
+
+    // Perform AJAX request to Flask backend for prediction
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/predict", true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                document.getElementById("prediction-text").innerText = response.prediction_text;
+                document.getElementById("prediction-results").style.display = "block";
+            } else {
+                console.log("Error:", xhr.status);
+            }
+        }
+    };
+    xhr.send(JSON.stringify({ "latitude": latitude, "longitude": longitude }));
+}
+</script>
+<script>
+  // JavaScript function to go back to the previous page
+  function goBack() {
+    window.location.href = 'indexcopy2.html';
+  }
+</script>
+
+<!-- Display prediction results -->
+{% if prediction_text %}
+<h2>Prediction Results</h2>
+<p>{{ prediction_text }}</p>
+{% endif %}
+
+</body>
+</html>

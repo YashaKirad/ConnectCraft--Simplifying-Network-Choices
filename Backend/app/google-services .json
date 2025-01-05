@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "614919209659",
+    "project_id": "knctcrft",
+    "storage_bucket": "knctcrft.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:614919209659:android:17c125135ccac3ad3b1f9e",
+        "android_client_info": {
+          "package_name": "com.sysflame.netdroid"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDv1Taaos8r3F4kpD1VO81NWF2QkyQgE2Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
